@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from resultmanagementapp.views import CustomAuthToken, StudentsView , StudentDataView, GetCountView,AttendanceView,ResultView,TeacherView,ParentView,GradeView,CourseView,CourseSubjectView,CourseSubjectMarksView,NoticeView,TaskView, LoginView
+from resultmanagementapp.views import LogoutView, CustomAuthToken, StudentsView , StudentDataView, GetCountView,AttendanceView,ResultView,TeacherView,ParentView,GradeView,CourseView,CourseSubjectView,CourseSubjectMarksView,NoticeView,TaskView, LoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('students',StudentsView.as_view(), name='Student Data'),
@@ -17,5 +17,6 @@ urlpatterns = [
     path('task',TaskView.as_view(), name='task'),
     path('Result',GradeView.as_view(), name='Result'),
     path('Attendance',AttendanceView.as_view(), name='Attendance'),
-    path('login',CustomAuthToken.as_view(), name='login')
+    path('login',CustomAuthToken.as_view(), name='login'),
+    path('logout',LogoutView.as_view(),name='logout')
 ]

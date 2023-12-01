@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth.models import User
 from .serializers import RegisterSerializer
-from django.contrib.auth import authenticate , login
+from django.contrib.auth import authenticate , login , logout
 from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication 
 from rest_framework.authtoken.models import Token
@@ -21,18 +21,15 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     
 class CustomAuthToken(ObtainAuthToken):
-
+    permission_classes=[permissions.AllowAny]
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
+        serializer = self.serializer_class(data=request.data,context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         
         token, created = Token.objects.get_or_create(user=user)
         return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email
+            'token': token.key
         })
     
 class LoginView(APIView):
@@ -53,10 +50,12 @@ class LoginView(APIView):
             print("Unsuccessful")
             return Response({'status': 'Failed',"code":400}, status=400)
 
+class LogoutView(APIView):
+    def get(self,request):
+        logout(request)
+        return Response({'status': 'success',"code":200}, status=200) 
 
 class StudentsView(APIView):
-    authentication_classes=[TokenAuthentication]
-    permission_classes=[IsAuthenticated]
     def get(self, request, *args , **kwargs):
         print(request.user)
         name = self.request.query_params.get('name','')
