@@ -15,8 +15,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class RegisterView(generics.CreateAPIView):
+    permission_classes=[permissions.AllowAny]
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     
@@ -56,6 +58,9 @@ class LogoutView(APIView):
         return Response({'status': 'success',"code":200}, status=200) 
 
 class StudentsView(APIView):
+    queryset = Students.objects.all()
+    serializer = StudentSerializers
+    parser_classes = (MultiPartParser, FormParser)
     def get(self, request, *args , **kwargs):
         print(request.user)
         name = self.request.query_params.get('name','')
@@ -72,14 +77,32 @@ class StudentsView(APIView):
         serializer = StudentSerializers(result , many=True)
         return Response({'status': 'success', "students": serializer.data,'url':settings.MEDIA_ROOT}, status=200)
     
-    def post(self, request):
-        serializer = StudentSerializers(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    
+    # def post(self, request):
+    #     serializer = StudentSerializers(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+    #     else:
+    #         return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self,request):
+        photo = request.data['photo']
+        Name = request.data['Name']
+        RollNo = request.data['RollNo']
+        Reportsto = request.data['Reportsto']
+        email = request.data['email']
+        fname = request.data['fname']
+        lname = request.data['lname']
+        dob = request.data['dob']
+        phone = request.data['phone']
+        mobile = request.data['mobile']
+        p_id= request.data['p_id']
+        status = request.data['status']
+        password = request.data['password']
+        designation = request.data['designation']
+        designation = request.data['designation']
+        c_id = request.data['c_id']
+        Students.objects.create(photo=photo,Name=Name,RollNo=RollNo,Reportsto=Reportsto,email=email,fname=fname,lname=lname,dob=dob,phone=phone,mobile=mobile,p_id=p_id,status=status,password=password,designation=designation,c_id=c_id)
+        return Response("Success")
 class StudentDataView(APIView):
     def get(self, request, *args , **kwargs):
         roll = self.request.query_params.get('roll','')
